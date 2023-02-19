@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sense {
+  id           String        @id @default(uuid())
+  name         String
+  sensorGroups SensorGroup[]
+}
+
+model SensorGroup {
+  id              String        @id @default(uuid())
+  name            String
+  senseId         String
+  sense           Sense         @relation(fields: [senseId], references: [id])
+  sensingPreset   SensingPreset @relation(fields: [sensingPresetId], references: [id])
+  sensingPresetId String
+  sensorsInfo     SensorInfo[]
+}
+
+model SensorInfo {
+  id            String      @id @default(uuid())
+  frequency     Float
+  sensorGroupId String
+  sensorGroup   SensorGroup @relation(fields: [sensorGroupId], references: [id])
+}
+
+model SensingPreset {
+  id           String        @id @default(uuid())
+  number       Int           @unique @default(autoincrement())
+  name         String        @unique
+  SensorGroups SensorGroup[]
+}
